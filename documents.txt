@@ -1,0 +1,14 @@
+Python is a high-level, interpreted programming language known for its
+clean syntax and readability. It supports multiple programming paradigms.
+
+LangChain is a framework for developing applications powered by language
+models. It provides tools for chaining LLM calls and building RAG systems.
+
+LangGraph extends LangChain with graph-based workflows. It allows building
+stateful, multi-actor applications with nodes and conditional edges.
+
+Chroma is an open-source vector database. It stores embeddings locally
+and supports similarity search for retrieval-augmented generation.
+
+Hallucination in AI refers to when a language model generates confident
+but factually incorrect information not grounded in its context.
