@@ -6,15 +6,6 @@ A small **retrieval-augmented generation** demo where a **LangGraph** workflow r
 
 ## How it works
 
-```mermaid
-flowchart LR
-  retrieve[retrieve] --> generate[generate]
-  generate --> grade[grade]
-  grade -->|score >= 3 or max retries| end([END])
-  grade -->|score < 3| rewrite[rewrite]
-  rewrite --> retrieve
-```
-
 1. **retrieve** — Embed `query` and pull the top **k = 3** chunks from Chroma.  
 2. **generate** — Answer using only retrieved context and the original **question**.  
 3. **grade** — LLM returns a **1–5** grounding score.  
