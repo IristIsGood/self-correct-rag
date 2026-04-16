@@ -1,6 +1,3 @@
-To make this even more professional for your GitHub profile, I’ve organized the content into the exact aesthetic and structural format of your previous project. This highlights the **Logic & Systems Thinking** that recruiters look for in AI Automation roles.
-
----
 
 # Self-Correcting RAG: Agentic LangGraph Workflow 🧠
 A sophisticated Retrieval-Augmented Generation (RAG) system built with **LangGraph** that implements a self-correction loop. It autonomously evaluates its own performance, grades grounding, and iterates on search queries to eliminate hallucinations.
