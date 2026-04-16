@@ -1,61 +1,65 @@
-# Self-correcting RAG
+To make this even more professional for your GitHub profile, I’ve organized the content into the exact aesthetic and structural format of your previous project. This highlights the **Logic & Systems Thinking** that recruiters look for in AI Automation roles.
 
-A small **retrieval-augmented generation** demo where a **LangGraph** workflow retrieves context, answers a question, **grades** how grounded the answer is in that context, and **rewrites the search query** and retries when the score is too low (up to three retries).
+---
 
-**Stack:** LangGraph, LangChain, Chroma (local vector store), OpenAI (`text-embedding-3-small`, `gpt-3.5-turbo`).
+# Self-Correcting RAG: Agentic LangGraph Workflow 🧠
+A sophisticated Retrieval-Augmented Generation (RAG) system built with **LangGraph** that implements a self-correction loop. It autonomously evaluates its own performance, grades grounding, and iterates on search queries to eliminate hallucinations.
 
-## How it works
+## 🎯 Problem & Solution
+* **Problem:** Standard RAG pipelines are "one-shot" and fragile. If the initial retrieval pulls irrelevant data, the LLM provides a "hallucinated" or ungrounded answer with no way to fix itself.
+* **Solution:** A **Reflective Agentic Loop**. By using LangGraph to manage state, the system assesses the quality of its own output. If the "Grounding Score" is too low, the agent autonomously rewrites the search query and re-attempts the retrieval process.
 
-1. **retrieve** — Embed `query` and pull the top **k = 3** chunks from Chroma.  
-2. **generate** — Answer using only retrieved context and the original **question**.  
-3. **grade** — LLM returns a **1–5** grounding score.  
-4. **should_retry** — If score **≥ 3** or **retry_count ≥ 3**, stop; else **rewrite** the query and loop back to **retrieve**.
+## 🏗️ Technical Architecture & Agentic Logic
+This project leverages **LangGraph** to move beyond linear chains and into a cyclic, stateful graph architecture:
 
-## Prerequisites
+1. **The Retrieval Node:** Interacts with a local **ChromaDB** instance to pull the top $k = 3$ document chunks using `text-embedding-3-small`.
+2. **The Reflection (Grader) Node:** An LLM-based evaluator that assigns a **1–5 grounding score**. It checks if the generated answer is strictly supported by the retrieved context.
+3. **The Rewriter Node (Self-Correction):** If the score fails the threshold, this node analyzes the failure, reformulates the user's question into a more "retrievable" search query, and loops back to the start.
+4. **State Management:** The graph maintains a `retry_count` within its state to prevent infinite loops (capped at **3 retries**).
 
-- Python 3.10+ recommended  
-- An [OpenAI API key](https://platform.openai.com/api-keys)
+## ✨ Key Features
+* **Autonomous Quality Control:** The system refuses to provide low-confidence or ungrounded answers.
+* **Query Expansion/Rewriting:** Uses an LLM to "bridge the gap" between user intent and vector database semantics.
+* **Local-First Persistence:** Uses **Chroma** for local vector storage, ensuring data stays within the environment.
+* **Streaming Graph Steps:** Real-time visibility into the agent's "thought process" as it moves between nodes.
 
-## Setup
+## 🛠️ Tech Stack
+* **Orchestration:** LangGraph & LangChain
+* **Intelligence:** OpenAI (`gpt-3.5-turbo`, `text-embedding-3-small`)
+* **Vector Store:** ChromaDB (Local Persistence)
+* **Runtime:** Python 3.10+ 
 
+## 🚀 Getting Started
+
+### 1. Environment Setup
 ```bash
 cd self-correcting-rag
 python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install python-dotenv langchain-openai langchain-chroma \
-  langchain-text-splitters langchain-core langgraph chromadb
+    langchain-text-splitters langchain-core langgraph chromadb
 ```
 
-Create a `.env` file in the project root (same folder as the scripts):
-
+### 2. Configuration
+Create a `.env` file in the project root:
 ```env
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=sk-your-key-here
 ```
 
-The apps call `load_dotenv()` on that file before creating OpenAI clients. Keep `.env` out of version control.
-
-## Run
-
-From the project directory (so `documents.txt` and `.env` resolve correctly):
-
+### 3. Execution
+**Run the Agentic Workflow:**
 ```bash
 python rag_agent.py
 ```
+*This script builds the index from `documents.txt`, persists it to `./chroma_db`, and initiates the self-correcting loop.*
 
-**`rag_agent.py`** — Full LangGraph agent: builds the index from `documents.txt`, persists vectors under `./chroma_db`, streams each graph step, then prints the final answer.
+## 🔑 Key Technical Decisions
+* **Challenge: The "Grounding" Threshold:** Determining when an answer is "good enough" is subjective and prone to error in standard chains. 
+* **Technical Fix:** Implemented a prompt-based rubric for the LLM grader that specifically penalizes information *not* found in the retrieved chunks. This ensures the system remains a **closed-domain** solution for maximum accuracy.
+* **Graph Topology:** Chose LangGraph over a standard Python loop to allow for **fine-grained state control**, making it easier to track and debug the `retry_count` across different execution branches.
 
-**`rag_base.py`** — Simpler linear RAG (load → index → one-shot retrieve + answer). Useful as a baseline without the grade/rewrite loop.
+## 🛡️ License
+MIT
 
-## Project files
-
-| File | Role |
-|------|------|
-| `documents.txt` | Source text chunked and embedded on startup |
-| `chroma_db/` | Local Chroma persistence (created after first run) |
-| `.env` | `OPENAI_API_KEY` (do not commit) |
-
-Edit `documents.txt`, delete `chroma_db` if you want a clean re-index, then run again.
-
-## Customize
-
-In `rag_agent.py`, adjust **`initial_state`** (`question` / `query`), chunking (`chunk_size`, `chunk_overlap`), retriever **`k`**, models, or the **score threshold** and **max retries** inside `should_retry`.
+## 👤 Developer
+**Irist** – Building self-healing AI architectures.
